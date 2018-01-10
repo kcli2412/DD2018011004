@@ -5,15 +5,24 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-                String str_url = "http://rate.bot.com.tw/xrt?Lang=zh-TW";
+                String str_url = "https://www.mobile01.com/rss/news.xml";
                 URL url = null;
                 try {
                     url = new URL(str_url);
@@ -47,12 +56,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                     String str1 = sb.toString();
                     Log.d("NET", str1);
-                    int index1 = str1.indexOf("日圓 (JPY)");
-                    int index2 = str1.indexOf("本行現金賣出", index1);
-                    int index3 = str1.indexOf("0.266", index2);
-                    Log.d("NET", "index1: "+index1+" index2: "+index2+" index3: "+index3);
-                    String data1 = str1.substring(index2+56, index2+61);
-                    Log.d("NET", data1);
+
+                    MyHandler dataHandler = new MyHandler();
+                    SAXParserFactory spf = SAXParserFactory.newInstance();
+                    SAXParser sp = spf.newSAXParser();
+                    XMLReader xr = sp.getXMLReader();
+                    xr.setContentHandler(dataHandler);
+                    xr.parse(new InputSource(new StringReader(str1)));
+
                     br.close();
                     isr.close();
                     inputStream.close();
@@ -61,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
                 } catch (ProtocolException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                } catch (ParserConfigurationException e) {
                     e.printStackTrace();
                 }
             }
