@@ -16,6 +16,7 @@ public class MyHandler extends DefaultHandler {
     boolean isTitle = false;
     boolean isItem = false;
     boolean isLink = false;
+    boolean isDescription = false;
     StringBuilder linkSB = new StringBuilder();
     ArrayList<Mobile01NewsItem> newsItem = new ArrayList<>();
     Mobile01NewsItem item;
@@ -23,41 +24,47 @@ public class MyHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
         //Log.d("NET", qName);
-        if (qName.equals("title"))
+        switch(qName)
         {
-            isTitle = true;
-        }
-        if (qName.equals("item"))
-        {
-            isItem = true;
-            item = new Mobile01NewsItem();
-        }
-        if (qName.equals("link"))
-        {
-            isLink = true;
+            case "title":
+                isTitle = true;
+                break;
+            case "item":
+                isItem = true;
+                item = new Mobile01NewsItem();
+                break;
+            case "link":
+                isLink = true;
+                break;
+            case "description":
+                isDescription = true;
+                break;
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        if (qName.equals("title"))
+        switch (qName)
         {
-            isTitle = false;
-        }
-        if (qName.equals("item"))
-        {
-            newsItem.add(item);
-            isItem = false;
-        }
-        if (qName.equals("link"))
-        {
-            isLink = false;
-            if (isItem)
-            {
-                item.link = linkSB.toString();
-                linkSB = new StringBuilder();
-            }
+            case "title":
+                isTitle = false;
+                break;
+            case "item":
+                newsItem.add(item);
+                isItem = false;
+                break;
+            case "link":
+                isLink = false;
+                if (isItem)
+                {
+                    item.link = linkSB.toString();
+                    linkSB = new StringBuilder();
+                }
+                break;
+            case "description":
+                isDescription = false;
+                break;
         }
     }
 
@@ -73,6 +80,10 @@ public class MyHandler extends DefaultHandler {
         {
             Log.d("NET", new String(ch, start, length));
             linkSB.append(new String(ch, start, length));
+        }
+        if (isDescription && isItem)
+        {
+            item.description = new String(ch, start, length);
         }
     }
 }
