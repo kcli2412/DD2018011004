@@ -83,7 +83,9 @@ public class MyHandler extends DefaultHandler {
         }
         if (isDescription && isItem)
         {
-            item.description = new String(ch, start, length);
+            String str = new String(ch, start, length);
+            str = str.replaceAll("<img.*/>", "");
+            item.description = str;
         }
     }
 }
