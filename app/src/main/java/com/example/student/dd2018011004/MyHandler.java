@@ -17,8 +17,8 @@ public class MyHandler extends DefaultHandler {
     boolean isItem = false;
     boolean isLink = false;
     StringBuilder linkSB = new StringBuilder();
-    ArrayList<String> titles = new ArrayList<>();
-    ArrayList<String> links = new ArrayList<>();
+    ArrayList<Mobile01NewsItem> newsItem = new ArrayList<>();
+    Mobile01NewsItem item;
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
@@ -30,6 +30,7 @@ public class MyHandler extends DefaultHandler {
         if (qName.equals("item"))
         {
             isItem = true;
+            item = new Mobile01NewsItem();
         }
         if (qName.equals("link"))
         {
@@ -46,6 +47,7 @@ public class MyHandler extends DefaultHandler {
         }
         if (qName.equals("item"))
         {
+            newsItem.add(item);
             isItem = false;
         }
         if (qName.equals("link"))
@@ -53,7 +55,7 @@ public class MyHandler extends DefaultHandler {
             isLink = false;
             if (isItem)
             {
-                links.add(linkSB.toString());
+                item.link = linkSB.toString();
                 linkSB = new StringBuilder();
             }
         }
@@ -65,7 +67,7 @@ public class MyHandler extends DefaultHandler {
         if (isTitle && isItem)
         {
             Log.d("NET", new String(ch, start, length));
-            titles.add(new String(ch, start, length));
+            item.title = new String(ch, start, length);
         }
         if (isLink && isItem)
         {
