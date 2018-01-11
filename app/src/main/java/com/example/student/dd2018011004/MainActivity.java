@@ -1,5 +1,6 @@
 package com.example.student.dd2018011004;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -32,12 +34,20 @@ import javax.xml.parsers.SAXParserFactory;
 public class MainActivity extends AppCompatActivity {
     ListView lv;
     ArrayAdapter<String> adapter;
-
+    MyHandler dataHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        lv = findViewById(R.id.listView);
+        lv = (ListView) findViewById(R.id.listView);
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent it = new Intent(MainActivity.this, DetailActivity.class);
+                it.putExtra("link", dataHandler.links.get(i));
+                startActivity(it);
+            }
+        });
     }
 
     @Override
@@ -74,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                             String str1 = sb.toString();
                             Log.d("NET", str1);
 
-                            final MyHandler dataHandler = new MyHandler();
+                            dataHandler = new MyHandler();
                             SAXParserFactory spf = SAXParserFactory.newInstance();
                             SAXParser sp = spf.newSAXParser();
                             XMLReader xr = sp.getXMLReader();
