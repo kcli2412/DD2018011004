@@ -1,12 +1,15 @@
 package com.example.student.dd2018011004;
 
 import android.util.Log;
+import android.util.Patterns;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Student on 2018/1/10.
@@ -18,6 +21,7 @@ public class MyHandler extends DefaultHandler {
     boolean isLink = false;
     boolean isDescription = false;
     StringBuilder linkSB = new StringBuilder();
+    StringBuilder descSB = new StringBuilder();
     ArrayList<Mobile01NewsItem> newsItem = new ArrayList<>();
     Mobile01NewsItem item;
     @Override
@@ -64,6 +68,26 @@ public class MyHandler extends DefaultHandler {
                 break;
             case "description":
                 isDescription = false;
+                if (isItem)
+                {
+                    String str = descSB.toString();
+                    Log.d("Desc", "endElement: str" + str);
+                    Pattern pattern = Pattern.compile("https.*jpg");
+                    Matcher m = pattern.matcher(str);
+                    String imgurl = "";
+                    if (m.find())
+                    {
+                        imgurl = m.group(0);
+                    }
+
+                    str = str.replaceAll("<img.*/>", "");
+                    item.description = str;
+                    item.imgurl = imgurl;
+                    Log.d("NET", "In Handler: Item.desc:" + item.description);
+                    Log.d("NET", "In Handler: Item.imgurl:" + item.imgurl);
+
+                    descSB = new StringBuilder();
+                }
                 break;
         }
     }
@@ -78,14 +102,13 @@ public class MyHandler extends DefaultHandler {
         }
         if (isLink && isItem)
         {
-            Log.d("NET", new String(ch, start, length));
+            Log.d("isLink", new String(ch, start, length));
             linkSB.append(new String(ch, start, length));
         }
         if (isDescription && isItem)
         {
-            String str = new String(ch, start, length);
-            str = str.replaceAll("<img.*/>", "");
-            item.description = str;
+            Log.d("isDescription", new String(ch, start, length));
+            descSB.append(new String(ch, start, length));
         }
     }
 }
