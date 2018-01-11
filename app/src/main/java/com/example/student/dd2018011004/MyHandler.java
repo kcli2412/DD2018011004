@@ -6,6 +6,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.util.ArrayList;
+
 /**
  * Created by Student on 2018/1/10.
  */
@@ -13,6 +15,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class MyHandler extends DefaultHandler {
     boolean isTitle = false;
     boolean isItem = false;
+    ArrayList<String> titles = new ArrayList<>();
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
@@ -45,7 +48,9 @@ public class MyHandler extends DefaultHandler {
         super.characters(ch, start, length);
         if (isTitle & isItem)
         {
-            Log.d("NET", new String(ch, start, length));
+            String str = new String(ch, start, length);
+            Log.d("NET", str);
+            titles.add(str);
         }
     }
 }
